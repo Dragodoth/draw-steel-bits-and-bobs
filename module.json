@@ -28,7 +28,7 @@
             }]
     },
     "esmodules": [
-      "scripts/module.js"
+      "scripts/module.mjs"
     ],
     "scripts": [
       "scripts/lib/lib.js"
