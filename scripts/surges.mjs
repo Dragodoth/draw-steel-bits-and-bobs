@@ -1,84 +1,127 @@
-export default async function promptAndSpendSurges(actor, token) {
+export default async function promptAndSpendSurges(actor, token, userId) {
 
     if (!actor) {
-            ui.notifications.warn("Please select an Actor.");
-            const selectedToken = canvas.tokens.controlled[0];
-            if (selectedToken) {
-                actor = selectedToken.actor;
-                token = selectedToken.document;
-            } else {
-                ui.notifications.warn("No selected token found.");
-                return;
-            }
+        const selectedToken = canvas.tokens.controlled[0];
+        if (selectedToken) {
+            actor = selectedToken.actor;
+            token = selectedToken.document;
         }
+    }
 
+    if (!actor) {
+        ui.notifications.warn("No actor.");
+        return;
+    }
+
+    
+    if (!token) {
+        token = actor.getActiveTokens()[0]?.document;
         if (!token) {
-            token = actor.getActiveTokens()[0]?.document;
-            if (!token) {
-                ui.notifications.warn("No token found.");
-                return;
-            }
+            console.warn(`No active token.`);
         }
+    }
+    
+    const surgesAvailible = actor.system?.hero?.surges ?? 0;
 
-    const surgesAvailible = actor.system.hero.surges;
-
-    if (!surgesAvailible) return;
+    if (surgesAvailible <= 0) {
+        console.log("No surges available.");
+        return;
+    }
 
     const rollData = actor.getRollData();
-
-    const dmgPerSurge = Math.max(rollData.M, rollData.A, rollData.R, rollData.I, rollData.P);
-
+    
+    if (!rollData) {
+        ui.notifications.warn("No rollData.");
+        return;
+    }
+    
+    let dmgPerSurge = Math.max(rollData.M, rollData.A, rollData.R, rollData.I, rollData.P);
+    
     const {createFormGroup, createNumberInput} = foundry.applications.fields;
 
     const content = document.createElement("div");
-
+    
     const surgesDialog = createFormGroup({
-        label: `You have ${surgesAvailible} surges availible`,
+        label: `You have ${surgesAvailible} surges available.`,
         rootId: "surges",
-        hint: `You have can use max 3 surges and each deals ${dmgPerSurge} damage`,
-        input: createNumberInput({ name: "spent" })
+        hint: `You can use a maximum of 3 surges. Each deals ${dmgPerSurge} damage.`,
+        
+        input: createNumberInput({
+            name: "spent",
+            min: 0,
+            max: Math.min(3, surgesAvailible),
+            value: 0
+        })
     })
 
     content.append(surgesDialog)
 
-    const surges = await ds.applications.api.DSDialog.input({
-        content,
-        window: {
-            title: "Do you want to spend surges to deal additional damage?",
-            icon: "fa-solid fa-bolt"
-        }
-    })
-
-    if (!surges) return;
-
-    if (!surges.spent === null) {surges.spent = 0;}
-    
-    surges.spent = Math.max(0, surges.spent);
-
-    surges.availible = surgesAvailible;
-
-    if (surges.availible < surges.spent) {
-        ui.notifications.warn("You do not have enough surges");
+    const targetUser = game.users.get(userId);
+    if (!targetUser) {
+        ui.notifications.warn("Target user not found to display the dialog.");
         return;
     }
 
-    if (surges.spent > 3) {
-        ui.notifications.warn("You can use max 3 surges");
-        surges.spent = 3;
+    let surgesSpent;
+    try {
+        surgesSpent = await foundry.applications.api.DialogV2.query(
+            targetUser,
+            "input",
+            {
+                content,
+                window: {
+                    title: "Spend Surges for Additional Damage?",
+                    icon: "fa-solid fa-bolt"
+                },
+                ok: {
+                    label: "Submit",
+                    callback: (event, button, dialog) => {
+                        const formData = new FormData(button.form);
+                        
+                        return parseInt(formData.get("spent") || 0);
+                    }
+                },
+                rejectClose: false
+            }
+        );
+    } catch (error) {
+        console.log("User closed the dialog without responding", error);
+        return;
     }
 
-    surges.new = Math.max(surges.availible - surges.spent, 0);
+    if (surgesSpent === null || surgesSpent === undefined) {
+        console.log("User cancelled surge spending or submitted a null value.");
+        return;
+    }
 
-    await actor.update({ 'system.hero.surges': surges.new })
+    surgesSpent = Math.max(0, surgesSpent);
 
-    const dmg = surges.spent * Math.max(rollData.M, rollData.A, rollData.R, rollData.I, rollData.P);
+    if (surgesAvailible < surgesSpent) {
+        ui.notifications.warn("You do not have enough surges.");
+        return;
+    }
 
+    if (surgesSpent > 3) {
+        ui.notifications.warn("You can only use a maximum of 3 surges.");
+        surgesSpent = 3;
+    }
+    
+    if (surgesSpent === 0) {
+        console.log("User submitted 0 surges. No action taken.");
+        return;
+    }
 
+    const newSurges = Math.max(surgesAvailible - surgesSpent, 0);
+    
+    await actor.update({ 'system.hero.surges': newSurges });
+
+    const dmg = surgesSpent * dmgPerSurge;
+    
     const roll = new ds.rolls.DamageRoll(dmg.toString());
     roll.toMessage({
         author: game.user,
         speaker: ChatMessage.getSpeaker({ token }),
-        flavor: `<p>${token.name} spent ${surges.spent} surges, and has ${surges.new} remaining.</p>`,
+        flavor: `<p>${actor.name} spent ${surgesSpent} surges, and has ${newSurges} remaining.</p>`,
         rollMode: "roll"
     });
 }

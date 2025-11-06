@@ -22,10 +22,10 @@ export default class DrawSteelBitsandBobsSettingsHandler {
                 default: false,
                 requiresReload: true,
             },
-            "enable-surges-promt": {
+            "enable-surges-prompt": {
                 // Name and hint should ideally be localization keys (e.g., DRAW_STEEL.Setting.AddHeroicResourcesNotes.Label)
                 name: "Enable Surges Prompt",
-                hint: "Enables promt after ability roll whether to spend surges or not",
+                hint: "Enables prompt after ability roll whether to spend surges or not",
                 scope: "client",
                 config: true,
                 type: new fields.BooleanField(),
