@@ -20,9 +20,8 @@ export default async function handlePowerRollDialog() {
         }
         
         if (token && targetActor) {
-            console.log (token.zIndex, target.zIndex)
             // High ground check - targeting from higher ground gets an edge
-            if (token.zIndex > target.zIndex) modifiers.edges += 1;
+            if (token.document.elevation > target.document.elevation) modifiers.edges += 1;
         }
         
         return modifiers;
