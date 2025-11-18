@@ -33,7 +33,7 @@ export default async function registerCustomDrawSteelActorSheet() {
             const statsTab = $html.find('.tab[data-tab="stats"]');
             
             if (!statsTab.length){
-                console.log("No stats tab found.")
+                console.log("Draw Steel Bits and Bobs | No stats tab found.")
                 return;
             }
                 
@@ -41,7 +41,7 @@ export default async function registerCustomDrawSteelActorSheet() {
             if (this.isEditMode) {
                 const characteristicsFieldset = statsTab.find('fieldset.characteristics');
                 if (!characteristicsFieldset.length) {
-                    console.log("No characteristics field found.")
+                    console.log("Draw Steel Bits and Bobs | No characteristics field found.")
                     return;
                 }
                 const editorHTML = `
@@ -59,7 +59,7 @@ export default async function registerCustomDrawSteelActorSheet() {
             } else {
                 const resourcesFieldset = statsTab.find('fieldset.resources');
                 if (!resourcesFieldset.length) {
-                    console.log("No resources field found.")
+                    console.log("Draw Steel Bits and Bobs | No resources field found.")
                     return;
                 }
                 
@@ -94,7 +94,7 @@ export default async function registerCustomDrawSteelActorSheet() {
             
             const editorContainer = document.getElementById(containerId);
             if (!editorContainer) {
-                console.log("No editor found.")
+                console.log("Draw Steel Bits and Bobs | No editor found.")
                 return;
             }
             
@@ -127,7 +127,7 @@ export default async function registerCustomDrawSteelActorSheet() {
         
         async _saveEditor(moduleID, flagKey) {
             if (!this.#editor) {
-                console.log("No editor found.")
+                console.log("Draw Steel Bits and Bobs | No editor found.")
                 return;
             }
             
@@ -184,7 +184,7 @@ export default async function registerCustomDrawSteelActorSheet() {
         _setupEditorEventListeners() {
             const customNotes = this.element.querySelector(".custom-notes");
             if (!customNotes) {
-                console.log("No notes found.")
+                console.log("Draw Steel Bits and Bobs | No notes found.")
                 return;
             }
             

@@ -12,19 +12,18 @@ export default async function promptAndSpendSurges(actor, token, userId) {
         ui.notifications.warn("No actor.");
         return;
     }
-
     
     if (!token) {
         token = actor.getActiveTokens()[0]?.document;
         if (!token) {
-            console.warn(`No active token.`);
+            console.warn(`Draw Steel Bits and Bobs | No active token.`);
         }
     }
     
     const surgesAvailible = actor.system?.hero?.surges ?? 0;
 
     if (surgesAvailible <= 0) {
-        console.log("No surges available.");
+        console.log("Draw Steel Bits and Bobs | No surges available.");
         return;
     }
 
@@ -85,12 +84,12 @@ export default async function promptAndSpendSurges(actor, token, userId) {
             }
         );
     } catch (error) {
-        console.log("User closed the dialog without responding", error);
+        console.log("Draw Steel Bits and Bobs | User closed the dialog without responding", error);
         return;
     }
 
     if (surgesSpent === null || surgesSpent === undefined) {
-        console.log("User cancelled surge spending or submitted a null value.");
+        console.log("Draw Steel Bits and Bobs | User cancelled surge spending or submitted a null value.");
         return;
     }
 
@@ -107,7 +106,7 @@ export default async function promptAndSpendSurges(actor, token, userId) {
     }
     
     if (surgesSpent === 0) {
-        console.log("User submitted 0 surges. No action taken.");
+        console.log("Draw Steel Bits and Bobs | User submitted 0 surges. No action taken.");
         return;
     }
 
