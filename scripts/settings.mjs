@@ -13,13 +13,13 @@ export default class DrawSteelBitsandBobsSettingsHandler {
     static get systemSettings() {
         return {
             "enable-heroic-resources-notes": {
-                // Name and hint should ideally be localization keys 
+                // Name and hint should ideally be localization keys
                 name: "Enable Heroic Resources Notes Field",
                 hint: "Adds a dedicated enriched notes field after the Hero sheet's Resources section.",
                 scope: "client",
                 config: true,
                 type: new fields.BooleanField(),
-                default: false,
+            default: false,
                 requiresReload: true,
             },
             "enable-surges-prompt": {
@@ -29,20 +29,20 @@ export default class DrawSteelBitsandBobsSettingsHandler {
                 scope: "client",
                 config: true,
                 type: new fields.BooleanField(),
-                default: false,
+            default: false,
                 requiresReload: true,
             },
-        "enable-edges-automatization": {
-            // Name and hint should ideally be localization keys
-            name: "Enable Edges Automatization",
-            hint: "Enables automaticaly adding edges for tactician mark and high ground",
-            scope: "client",
-            config: true,
-            type: new fields.BooleanField(),
+            "enable-edges-automatization": {
+                // Name and hint should ideally be localization keys
+                name: "Enable Edges Automatization",
+                hint: "Enables automaticaly adding edges for tactician mark and high ground",
+                scope: "client",
+                config: true,
+                type: new fields.BooleanField(),
             default: false,
-            requiresReload: true,
-        }
-    };
+                requiresReload: true,
+            }
+        };
     }
     
     /* -------------------------------------------------- */

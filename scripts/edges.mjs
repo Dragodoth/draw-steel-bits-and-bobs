@@ -1,7 +1,4 @@
-import { moduleID } from "./constants.mjs";
-
 export default async function handlePowerRollDialog() {
-    if (!game.settings.get(moduleID, "enable-edges-automatization")) return;
     // Save the original method
     const originalGetTargetModifiers = CONFIG.Item.dataModels.ability.prototype.getTargetModifiers;
     
@@ -16,12 +13,18 @@ export default async function handlePowerRollDialog() {
         
         if (targetActor) {
             // Mark condition check - targeting marked gets an edge
-            if (targetActor.effects.some(e => e.name === "Mark")) modifiers.edges += 1;
+            if (targetActor.effects.some(e => e.name === "Mark")){
+                console.log("Draw Steel Bits and Bobs | Mark condition check");
+                modifiers.edges += 1;
+            }
         }
         
-        if (token && targetActor) {
+        if (token && target && targetActor) {
             // High ground check - targeting from higher ground gets an edge
-            if (token.document.elevation > target.document.elevation) modifiers.edges += 1;
+            if (token.document.elevation >= target.document.elevation + targetActor.system.combat.size.value && !targetActor.statuses.has("burrow")){
+                console.log("Draw Steel Bits and Bobs | High ground check");
+                modifiers.edges += 1;
+            }
         }
         
         return modifiers;

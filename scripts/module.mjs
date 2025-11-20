@@ -7,8 +7,6 @@ import registerCustomDrawSteelActorSheet from "./prosemirror-heroic-resources-sh
 const waitingForRollToFinish = new Map();
 
 function registerSurgeHooks() {
-    if (!game.settings.get(moduleID, "enable-surges-prompt")) return;
-    
     Hooks.on("createChatMessage", handleChatMessage);
     
     if (game.modules.get("dice-so-nice")?.active) {
@@ -78,8 +76,13 @@ Hooks.once("ready", () => {
         console.log("Draw Steel Bits and Bobs | Registering CustomDrawSteelActorSheet");
         registerCustomDrawSteelActorSheet();
     }
+    if (game.settings.get(moduleID, "enable-surges-prompt")) {
+        console.log("Draw Steel Bits and Bobs | Registering Surges Hooks");
+        registerSurgeHooks();
+    }
     
-    registerSurgeHooks();
-    
-    handlePowerRollDialog()
+    if (game.settings.get(moduleID, "enable-edges-automatization")){
+        console.log("Draw Steel Bits and Bobs | Adding Edge Automatization");
+        handlePowerRollDialog()
+    }
 });
